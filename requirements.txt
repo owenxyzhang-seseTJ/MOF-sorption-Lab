@@ -1,0 +1,7 @@
+flask
+scipy
+pandas
+openpyxl
+pygaps
+pyiast
+CoolProp

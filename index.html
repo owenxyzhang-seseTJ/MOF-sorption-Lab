@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MOF Sorption Lab Launcher</title>
+    <link rel="icon" href="static/favicon.ico" sizes="any" />
+    <meta http-equiv="refresh" content="0; url=http://127.0.0.1:5055" />
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+        background: linear-gradient(180deg, #edf2f8, #dce4ee);
+        color: #14304a;
+      }
+
+      .panel {
+        max-width: 620px;
+        padding: 28px;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.78);
+        box-shadow: 0 24px 60px rgba(23, 39, 56, 0.12);
+        border: 1px solid rgba(108, 130, 154, 0.24);
+      }
+
+      h1 {
+        margin: 0 0 10px;
+        letter-spacing: -0.04em;
+      }
+
+      .brand {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+
+      .brand img {
+        width: 54px;
+        height: 54px;
+        border-radius: 16px;
+      }
+
+      p {
+        margin: 0 0 12px;
+        line-height: 1.65;
+        color: #5d7288;
+      }
+
+      a {
+        color: #1974d2;
+      }
+
+      code {
+        background: rgba(20, 48, 74, 0.07);
+        padding: 2px 6px;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="panel">
+      <div class="brand">
+        <img src="static/mof-sorption-lab-icon-256.png" alt="MOF Sorption Lab icon" />
+        <h1>MOF Sorption Lab</h1>
+      </div>
+      <p>如果本地服务已经启动，这个页面会自动跳转到 <a href="http://127.0.0.1:5055">http://127.0.0.1:5055</a>。</p>
+      <p>如果没有跳转，请先在 macOS 中双击 <code>启动 MOF Sorption Lab.command</code>，或在 Windows 中双击 <code>Start MOF Sorption Lab.bat</code>。</p>
+      <p>Designed by Xiaoyu Zhang at Tongji, shaped together with Codex. If needed, feel free to contact <a href="mailto:owenxyzhang@gmail.com">owenxyzhang@gmail.com</a>.</p>
+    </div>
+  </body>
+</html>

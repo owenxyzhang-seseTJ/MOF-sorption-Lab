@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MOF Sorption Lab</title>
+    <link rel="stylesheet" href="../static/styles.css" />
+    <link rel="icon" href="../static/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="../static/apple-touch-icon.png" />
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [["\\(", "\\)"], ["$", "$"]],
+          displayMath: [["\\[", "\\]"]],
+        },
+        chtml: {
+          matchFontHeight: false,
+        },
+      };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" defer></script>
+    <script src="../static/app.js" defer></script>
+  </head>
+  <body>
+    <div class="background-layer"></div>
+    <div class="app-shell">
+      <header class="topbar frosted">
+        <div class="brand-lockup">
+          <img src="../static/mof-sorption-lab-icon-256.png" alt="MOF Sorption Lab icon" class="brand-mark" />
+          <div>
+          <p class="eyebrow">Local-first adsorption analysis studio</p>
+          <h1>MOF Sorption Lab</h1>
+          <p class="designer-line">Designed by Xiaoyu Zhang at Tongji, shaped together with Codex.</p>
+          </div>
+        </div>
+        <div class="topbar-note">
+          <span>Adsorbate Library</span>
+          <span>Fit · Q<sub>st</sub> · IAST · PSD</span>
+          <span>Local-first</span>
+        </div>
+      </header>
+
+      <nav class="route-tabs frosted">
+        <button class="route-tab active" data-route-target="home">总览</button>
+        <button class="route-tab" data-route-target="guide">说明页</button>
+        <button class="route-tab" data-route-target="adsorbates">吸附质信息</button>
+        <button class="route-tab" data-route-target="isotherm">等温线拟合</button>
+        <button class="route-tab" data-route-target="qst">Q<sub>st</sub></button>
+        <button class="route-tab" data-route-target="iast">IAST</button>
+        <button class="route-tab" data-route-target="betpsd">BET / 孔径</button>
+      </nav>
+
+      <main>
+        <section class="route-panel active" id="route-home">
+          <div class="hero-panel frosted">
+            <div class="hero-copy">
+              <p class="eyebrow">For MOFs, COFs, zeolites and porous carbons</p>
+              <p class="hero-text">
+                面向多孔材料研究的本地网页程序。支持常见吸附质物性检索、等温线模型拟合、通用插值拟合、
+                Q<sub>st</sub>、IAST、BET 自动取点、t-plot 与孔径分布分析，并提供一键导出与绘图样式调整。
+              </p>
+              <div class="hero-actions">
+                <button class="primary-button jump-button" data-route-target="guide">先看说明页</button>
+                <button class="ghost-button jump-button" data-route-target="isotherm">直接开始拟合</button>
+              </div>
+            </div>
+            <div class="hero-metrics">
+              <div>
+                <span class="metric-label">数据输入</span>
+                <strong>粘贴 / CSV / DAT / TXT / Excel</strong>
+              </div>
+              <div>
+                <span class="metric-label">通用拟合</span>
+                <strong>PCHIP 插值适配 S 型与非典型曲线</strong>
+              </div>
+              <div>
+                <span class="metric-label">结果输出</span>
+                <strong>图表、参数、表格、CSV / JSON</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="home-grid">
+            <article class="feature-tile frosted">
+              <p class="tile-tag">01</p>
+              <h3>说明页</h3>
+              <p>从零开始，教你看懂压力单位、吸附量单位、常见模型、Q<sub>st</sub>、IAST 与 PSD。</p>
+              <button class="tile-link jump-button" data-route-target="guide">进入说明页</button>
+            </article>
+            <article class="feature-tile frosted">
+              <p class="tile-tag">02</p>
+              <h3>吸附质信息</h3>
+              <p>查询分子尺寸、动力学直径、熔点、沸点、偶极矩和四极矩，支持中英文与分子式。</p>
+              <button class="tile-link jump-button" data-route-target="adsorbates">进入模块</button>
+            </article>
+            <article class="feature-tile frosted">
+              <p class="tile-tag">03</p>
+              <h3>等温线拟合</h3>
+              <p>除经典解析模型外，新增保形插值型拟合，适合非典型等温线。</p>
+              <button class="tile-link jump-button" data-route-target="isotherm">进入模块</button>
+            </article>
+            <article class="feature-tile frosted">
+              <p class="tile-tag">04</p>
+              <h3>Q<sub>st</sub> 与 IAST</h3>
+              <p>同时输出结果、方法公式说明与可导出的表格数据。</p>
+              <button class="tile-link jump-button" data-route-target="qst">进入模块</button>
+            </article>
+            <article class="feature-tile frosted">
+              <p class="tile-tag">05</p>
+              <h3>BET / 孔径分布</h3>
+              <p>经典模型与 NLDFT 拆分选择，避免混用；结果支持一键导出。</p>
+              <button class="tile-link jump-button" data-route-target="betpsd">进入模块</button>
+            </article>
+          </div>
+        </section>
+
+        <section class="route-panel" id="route-guide">
+          <div class="module-header frosted">
+            <div>
+              <p class="eyebrow">Illustrated manual</p>
+              <h2>说明书</h2>
+            </div>
+            <div class="button-group">
+              <a class="ghost-button" href="/MANUAL.md" target="_blank" rel="noreferrer">打开独立说明书</a>
+              <button class="ghost-button jump-button" data-route-target="home">返回总览</button>
+            </div>
+          </div>
+
+          <div class="manual-shell">
+            <article class="guide-card frosted guide-hero">
+              <div>
+                <p class="eyebrow">从原始实验数据到可解释结果</p>
+                <h3>这份说明书适合谁</h3>
+                <p class="manual-lead">这份手册面向第一次接触吸附计算的学生、日常做吸附实验的数据使用者，以及需要快速检查模型边界条件的研究者。每一节都尽量回答三个问题：这个模型在做什么、为什么这样算、什么时候应该或不应该用它。</p>
+                <div class="manual-pill-row">
+                  <span class="pill">模型原理</span>
+                  <span class="pill">使用场景</span>
+                  <span class="pill">输入要求</span>
+                  <span class="pill">结果解释</span>
+                </div>
+              </div>
+              <svg class="guide-svg manual-hero-svg" viewBox="0 0 420 220" aria-hidden="true">
+                <rect x="22" y="28" width="104" height="56" rx="22"></rect>
+                <rect x="158" y="28" width="104" height="56" rx="22"></rect>
+                <rect x="294" y="28" width="104" height="56" rx="22"></rect>
+                <rect x="90" y="132" width="240" height="54" rx="27"></rect>
+                <path d="M126 56h32"></path>
+                <path d="M262 56h32"></path>
+                <path d="M210 84v48"></path>
+                <text x="74" y="62">原始文件</text>
+                <text x="210" y="62">模型选择</text>
+                <text x="346" y="62">结果输出</text>
+                <text x="210" y="166">图、参数、热力学解释</text>
+              </svg>
+            </article>
+
+            <section class="guide-card frosted">
+              <p class="eyebrow">Contents</p>
+              <h3>目录</h3>
+              <div class="toc-grid">
+                <a class="toc-link" href="#manual-data">数据准备与导入</a>
+                <a class="toc-link" href="#manual-fit">等温线拟合模型</a>
+                <a class="toc-link" href="#manual-qst">Q<sub>st</sub> 计算</a>
+                <a class="toc-link" href="#manual-iast">IAST 选择性</a>
+                <a class="toc-link" href="#manual-bet">BET / t-plot / PSD</a>
+                <a class="toc-link" href="#manual-choice">如何选模型</a>
+              </div>
+            </section>
+
+            <section class="manual-section frosted" id="manual-data">
+              <div class="manual-section-head">
+                <div>
+                  <p class="eyebrow">Section 1</p>
+                  <h3>数据准备与导入</h3>
+                </div>
+                <span class="pill">先做这一步</span>
+              </div>
+              <div class="manual-two-col">
+                <div>
+                  <p>程序里的所有计算最终都依赖于一组或多组二维数据：第一列是压力，第二列是吸附量。对于 Q<sub>st</sub>，每个温度对应一组二维数据；对于 IAST，每个纯组分对应一组二维数据；对于 BET / PSD，常见输入是相对压力和吸附量。</p>
+                  <p>导入复杂原始文件时，程序现在会先定位真正的二维数值数据区，再把候选压力列、吸附列、脱附列和单位猜测展示给你确认。也就是说，它不是直接“盲猜前两列”，而是先做一轮检查，再让你确认。</p>
+                  <ul>
+                    <li>如果文件里同时有 adsorption 和 desorption，两条支路会分别列成候选列。</li>
+                    <li>如果 Excel 有多个 sheet，可以先选 sheet 再确认列。</li>
+                    <li>如果列名带有 `P/P0`、`bar`、`kPa`、`cm3(STP)/g` 等关键词，程序会自动猜测单位，但你仍然可以手动改。</li>
+                  </ul>
+                </div>
+                <article class="figure-card">
+                  <svg class="manual-svg" viewBox="0 0 360 220" aria-hidden="true">
+                    <rect x="20" y="24" width="118" height="156" rx="18"></rect>
+                    <rect x="154" y="24" width="86" height="46" rx="16"></rect>
+                    <rect x="154" y="82" width="86" height="46" rx="16"></rect>
+                    <rect x="154" y="140" width="86" height="46" rx="16"></rect>
+                    <rect x="258" y="54" width="82" height="104" rx="20"></rect>
+                    <path d="M138 102h16"></path>
+                    <path d="M240 102h18"></path>
+                    <text x="79" y="58">原始文件</text>
+                    <text x="197" y="52">定位数据区</text>
+                    <text x="197" y="110">识别列名</text>
+                    <text x="197" y="168">确认单位</text>
+                    <text x="299" y="112">导入工作区</text>
+                  </svg>
+                  <p class="figure-caption">推荐流程：先用上传按钮选文件，再在导入确认窗口中确认列、单位和支路。</p>
+                </article>
+              </div>
+              <div class="callout-grid">
+                <article class="callout-card">
+                  <h4>最理想的数据格式</h4>
+                  <p>标准表头、单一单位、单一支路、数值连续递增、没有中途插入说明文字。</p>
+                </article>
+                <article class="callout-card">
+                  <h4>最常见的错误</h4>
+                  <p>把脱附支路误当吸附支路、把体积单位当摩尔单位、把相对压力当绝对压力、把多个温度混在一个表格中但没有分组。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="manual-section frosted" id="manual-fit">
+              <div class="manual-section-head">
+                <div>
+                  <p class="eyebrow">Section 2</p>
+                  <h3>等温线拟合模型</h3>
+                </div>
+                <span class="pill">单组分基础模块</span>
+              </div>
+              <p class="manual-lead">等温线拟合的目的不是“找一个 R² 最高的曲线”这么简单。真正有意义的是：这个模型是否和你的材料、孔结构、压力范围以及你想要解释的问题相匹配。下面的模型卡片按“物理含义”和“使用边界”来讲。</p>
+              <div class="model-grid">
+                <article class="model-card">
+                  <h4>Langmuir</h4>
+                  <div class="formula-block">\[q(P)=\frac{q_m K P}{1+K P}\]</div>
+                  <p>假设吸附位点等价、单层占据、位点之间互不影响。最适合近似单层饱和、低到中压拟合很规整的体系。</p>
+                  <ul>
+                    <li>适合：微孔材料、单一强位点主导的初步拟合。</li>
+                    <li>不适合：明显双位点、S 型、强非均匀表面。</li>
+                  </ul>
+                </article>
+                <article class="model-card">
+                  <h4>Freundlich</h4>
+                  <div class="formula-block">\[q(P)=K_F P^{1/n}\]</div>
+                  <p>经验模型，强调表面能量不均匀，但没有严格饱和上限。适合做快速经验描述，不适合高压外推。</p>
+                  <ul>
+                    <li>适合：表面不均匀、只需要经验拟合的情况。</li>
+                    <li>不适合：希望得到明确饱和容量或高压预测。</li>
+                  </ul>
+                </article>
+                <article class="model-card">
+                  <h4>Henry</h4>
+                  <div class="formula-block">\[q(P)=K_H P\]</div>
+                  <p>只描述极低压近似线性区域，常用于比较初始亲和性，或给后续模型提供低压参考。</p>
+                  <ul>
+                    <li>适合：超低压起始斜率。</li>
+                    <li>不适合：完整等温线全区间拟合。</li>
+                  </ul>
+                </article>
+                <article class="model-card">
+                  <h4>Toth</h4>
+                  <div class="formula-block">\[q(P)=q_m\frac{K P}{\left[1+(K P)^t\right]^{1/t}}\]</div>
+                  <p>可看成对 Langmuir 的非均匀修正，常用于真实材料中比 Langmuir 更稳健地覆盖宽压力范围。</p>
+                  <ul>
+                    <li>适合：表面存在非均匀性，但仍希望保留单层型解释。</li>
+                    <li>经验上常比简单 Langmuir 更稳定。</li>
+                  </ul>
+                </article>
+                <article class="model-card">
+                  <h4>Dual-site Langmuir</h4>
+                  <div class="formula-block">\[q(P)=q_{m,1}\frac{K_1P}{1+K_1P}+q_{m,2}\frac{K_2P}{1+K_2P}\]</div>
+                  <p>适合存在两类位点的体系，例如一类强位点加一类弱位点。MOF 数据里非常常见。</p>
+                  <ul>
+                    <li>适合：单位点 Langmuir 系统性偏离时。</li>
+                    <li>注意：参数更多，需要检查是否过拟合。</li>
+                  </ul>
+                </article>
+                <article class="model-card">
+                  <h4>Quadratic / Temkin</h4>
+                  <div class="formula-block">\[q(P)=q_m\frac{P(K_a+2K_bP)}{1+K_aP+K_bP^2}\]</div>
+                  <p>这一类模型用于处理更复杂的曲率或吸附分子间相互作用。适合曲率比 Langmuir/Toth 更复杂的情况。</p>
+                  <ul>
+                    <li>适合：中等复杂度的非理想吸附行为。</li>
+                    <li>注意：参数解释能力弱于经典单层模型。</li>
+                  </ul>
+                </article>
+                <article class="model-card">
+                  <h4>BET</h4>
+                  <div class="formula-block">\[q(P)=q_m\frac{C(P/P_0)}{(1-P/P_0)\left[1+(C-1)(P/P_0)\right]}\]</div>
+                  <p>BET 的核心用途是比表面积分析，不是把整条等温线都拟合得“最好看”。更应该理解为一段相对压力范围中的多层吸附分析工具。</p>
+                  <ul>
+                    <li>适合：比表面积、单层容量、线性区分析。</li>
+                    <li>不适合：把整条等温线当成一个纯经验拟合模型使用。</li>
+                  </ul>
+                </article>
+                <article class="model-card">
+                  <h4>PCHIP / 线性插值</h4>
+                  <div class="formula-block">\[q(P)=\operatorname{PCHIP}\left(P;\{(P_i,q_i)\}\right)\]</div>
+                  <p>不是机理模型，而是保形插值。对 S 型、台阶型或其他非典型曲线尤其有用，因为它保留实验点趋势，不强迫你用一个不合适的解析式。</p>
+                  <ul>
+                    <li>适合：通用拟合、可视化、IAST 前处理。</li>
+                    <li>不适合：单独拿来做机理讨论结论。</li>
+                  </ul>
+                </article>
+              </div>
+              <div class="manual-two-col">
+                <article class="figure-card">
+                  <svg class="manual-svg" viewBox="0 0 360 220" aria-hidden="true">
+                    <path d="M48 172H316" />
+                    <path d="M60 180V44" />
+                    <path d="M82 160C122 82 180 58 246 54C273 54 291 60 304 70" />
+                    <path d="M82 160C146 124 224 100 304 92" stroke-dasharray="8 10"/>
+                    <path d="M82 160C118 157 156 146 187 116C204 99 218 88 304 84" stroke-dasharray="2 12"/>
+                    <text x="258" y="68">Langmuir</text>
+                    <text x="250" y="88">Toth / DSL</text>
+                    <text x="236" y="110">Freundlich</text>
+                    <text x="182" y="196">Pressure</text>
+                    <text x="26" y="110" transform="rotate(-90 26 110)">Loading</text>
+                  </svg>
+                  <p class="figure-caption">同一组数据在不同模型下会有不同曲率。选择模型时，要看曲线形状和物理含义是否匹配。</p>
+                </article>
+                <div>
+                  <h4>结果怎么解读</h4>
+                  <ul>
+                    <li>先看拟合区间是否覆盖了你真正关心的压力范围。</li>
+                    <li>再看参数是否有清晰物理意义，例如容量、亲和常数、位点数量。</li>
+                    <li>最后才看 R² 和 RMSE。高 R² 只是“数学上贴得近”，不等于“物理上更对”。</li>
+                  </ul>
+                  <h4>什么时候先用插值法</h4>
+                  <ul>
+                    <li>曲线明显 S 型或有台阶。</li>
+                    <li>不同解析模型都在某一段严重偏离。</li>
+                    <li>你的目标是后续插值或 IAST 前处理，而不是机理讨论。</li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+
+            <section class="manual-section frosted" id="manual-qst">
+              <div class="manual-section-head">
+                <div>
+                  <p class="eyebrow">Section 3</p>
+                  <h3>Q<sub>st</sub> 等量吸附热</h3>
+                </div>
+                <span class="pill">多温度数据模块</span>
+              </div>
+              <div class="manual-two-col">
+                <div>
+                  <p>Q<sub>st</sub> 反映的是在固定吸附量下，分子从气相进入吸附相时对应的热效应。它不是某一个常数，而是通常会随覆盖度变化的一条曲线。</p>
+                  <div class="formula-block">\[Q_{st}(q)=-R\left(\frac{\partial \ln P}{\partial (1/T)}\right)_q\]</div>
+                  <p>程序提供两种常见方法：</p>
+                  <ul>
+                    <li><strong>Clausius-Clapeyron</strong>：在同一 loading 下，对不同温度的平衡压力做 \(\ln P\) 对 \(1/T\) 的线性拟合。优点是直观，缺点是容易受插值噪声影响。</li>
+                    <li><strong>Virial</strong>：把多温数据统一写成 Virial 形式，再由系数推回 Q<sub>st</sub>。优点是整体更平滑，缺点是对拟合质量和数据区间更敏感。</li>
+                  </ul>
+                </div>
+                <article class="figure-card">
+                  <svg class="manual-svg" viewBox="0 0 360 220" aria-hidden="true">
+                    <path d="M46 174H314" />
+                    <path d="M60 186V46" />
+                    <path d="M98 154L144 126L188 98L232 74L282 56" />
+                    <circle cx="98" cy="154" r="5"></circle>
+                    <circle cx="144" cy="126" r="5"></circle>
+                    <circle cx="188" cy="98" r="5"></circle>
+                    <circle cx="232" cy="74" r="5"></circle>
+                    <circle cx="282" cy="56" r="5"></circle>
+                    <text x="224" y="90">\(\ln P\)</text>
+                    <text x="244" y="194">\(1/T\)</text>
+                    <text x="28" y="110" transform="rotate(-90 28 110)">固定 \(q\)</text>
+                  </svg>
+                  <p class="figure-caption">Clausius-Clapeyron 的核心是：在固定 loading 下，把多温平衡压力映射成一条斜率线，再由斜率得到 Q<sub>st</sub>。</p>
+                </article>
+              </div>
+              <div class="callout-grid">
+                <article class="callout-card">
+                  <h4>适用场景</h4>
+                  <p>至少两条、最好三条以上不同温度的纯组分等温线；各条曲线在 loading 范围上需要有足够重叠。</p>
+                </article>
+                <article class="callout-card">
+                  <h4>常见误区</h4>
+                  <p>温区差得太大、各温度数据覆盖区间不重叠、在很高 loading 尾部强行比较，都会让结果不稳定。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="manual-section frosted" id="manual-iast">
+              <div class="manual-section-head">
+                <div>
+                  <p class="eyebrow">Section 4</p>
+                  <h3>IAST 选择性计算</h3>
+                </div>
+                <span class="pill">混合气预测</span>
+              </div>
+              <div class="manual-two-col">
+                <div>
+                  <p>IAST（Ideal Adsorbed Solution Theory）是在只有纯组分等温线时，用来预测混合气竞争吸附的一阶理论。它不是直接读混合气实验，而是先把每个纯组分拟合好，再通过铺展压力平衡求出混合吸附相组成。</p>
+                  <div class="formula-block">\[\pi_i(P_i^*)=\int_{0}^{P_i^*}\frac{q_i^0(P)}{P}\,dP,\quad \pi_1=\pi_2=\cdots=\pi_N\]</div>
+                  <div class="formula-block">\[S_{1/2}=\frac{x_1/x_2}{y_1/y_2}\]</div>
+                  <ul>
+                    <li>\(y_i\) 是气相摩尔分数，\(x_i\) 是吸附相摩尔分数。</li>
+                    <li>选择性越大，表示吸附相中该组分相对更富集。</li>
+                    <li>纯组分拟合的误差会直接传播到混合气结果。</li>
+                  </ul>
+                </div>
+                <article class="figure-card">
+                  <svg class="manual-svg" viewBox="0 0 360 220" aria-hidden="true">
+                    <circle cx="88" cy="90" r="26"></circle>
+                    <circle cx="146" cy="74" r="18"></circle>
+                    <circle cx="146" cy="122" r="18"></circle>
+                    <circle cx="216" cy="90" r="30"></circle>
+                    <circle cx="272" cy="74" r="18"></circle>
+                    <circle cx="272" cy="122" r="18"></circle>
+                    <path d="M112 90H186"></path>
+                    <path d="M246 90H320"></path>
+                    <text x="118" y="172">pure A</text>
+                    <text x="244" y="172">pure B</text>
+                    <text x="180" y="50">IAST</text>
+                    <text x="178" y="198">mixture selectivity</text>
+                  </svg>
+                  <p class="figure-caption">IAST 的本质是：先把纯组分写清楚，再把它们放到同一个混合吸附平衡框架里比较。</p>
+                </article>
+              </div>
+              <div class="callout-grid">
+                <article class="callout-card">
+                  <h4>适合什么时候</h4>
+                  <p>你已经有可靠的纯组分等温线，希望快速比较不同气相比例和总压下的竞争吸附行为。</p>
+                </article>
+                <article class="callout-card">
+                  <h4>什么时候要小心</h4>
+                  <p>强非理想吸附、骨架柔性导致的相变、多组分协同效应很强时，IAST 只能看作近似。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="manual-section frosted" id="manual-bet">
+              <div class="manual-section-head">
+                <div>
+                  <p class="eyebrow">Section 5</p>
+                  <h3>BET / t-plot / PSD 结构分析</h3>
+                </div>
+                <span class="pill">表面积与孔结构</span>
+              </div>
+              <div class="manual-two-col">
+                <div>
+                  <h4>BET</h4>
+                  <p>BET 用于从相对压力区间中取出多层吸附线性区域，从而得到单层容量和比表面积。程序会自动寻找满足点数、正 C 常数和较高线性度的区间，但你仍然应该手动复核。</p>
+                  <div class="formula-block">\[\frac{P/P_0}{q(1-P/P_0)}=\frac{1}{q_m C}+\frac{C-1}{q_m C}\frac{P}{P_0}\]</div>
+                  <h4>t-plot</h4>
+                  <p>t-plot 把吸附量转换到统计膜厚尺度，目的是分辨微孔填充与外表面贡献，进一步估算微孔体积和平均孔径。</p>
+                  <h4>PSD</h4>
+                  <p>孔径分布的关键是“模型与孔区匹配”。微孔和介孔适用的方法并不一样，经典模型和 NLDFT 也不能混成一个概念。</p>
+                </div>
+                <article class="figure-card">
+                  <svg class="manual-svg" viewBox="0 0 360 220" aria-hidden="true">
+                    <rect x="36" y="40" width="88" height="132" rx="22"></rect>
+                    <rect x="144" y="68" width="88" height="104" rx="34"></rect>
+                    <rect x="252" y="90" width="76" height="82" rx="12"></rect>
+                    <path d="M80 52V160"></path>
+                    <path d="M188 84V160"></path>
+                    <path d="M290 102V160"></path>
+                    <text x="80" y="192">微孔</text>
+                    <text x="188" y="192">介孔</text>
+                    <text x="290" y="192">大孔</text>
+                  </svg>
+                  <p class="figure-caption">孔径分布的第一步不是套公式，而是先判断你的数据主要想看的是微孔、介孔还是更大孔区。</p>
+                </article>
+              </div>
+              <div class="model-grid psd-grid">
+                <article class="model-card">
+                  <h4>HK / SF / RY 系列</h4>
+                  <p>典型微孔分析方法。适合在微孔主导材料中快速得到孔宽分布，但依赖几何假设，对材料-探针组合也较敏感。</p>
+                </article>
+                <article class="model-card">
+                  <h4>BJH / DH / pygaps-DH</h4>
+                  <p>介孔分析常见方法，特别适合脱附支路分析。对弯月面模型和支路选择敏感，解释时需要说明是 adsorption 还是 desorption branch。</p>
+                </article>
+                <article class="model-card">
+                  <h4>NLDFT</h4>
+                  <p>统计力学模型，理论上更精细，但前提是 kernel 必须和探针分子、温度、孔几何匹配。当前内置直接支持 77 K N<sub>2</sub> kernel。</p>
+                </article>
+              </div>
+              <div class="callout-grid">
+                <article class="callout-card">
+                  <h4>程序里的数据入口</h4>
+                  <p>当前 BET / PSD 页面只接受 77 K N<sub>2</sub>、87 K Ar、273 K CO<sub>2</sub> 数据；这是为了避免把不合适的数据送进不合适的模型。</p>
+                </article>
+                <article class="callout-card">
+                  <h4>结果怎么读</h4>
+                  <p>主峰孔径表示分布峰值位置，但不等于“材料只有一个孔径”。结合等温线形状、滞后环和材料结构一起解释更可靠。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="manual-section frosted" id="manual-choice">
+              <div class="manual-section-head">
+                <div>
+                  <p class="eyebrow">Section 6</p>
+                  <h3>如何选模型</h3>
+                </div>
+                <span class="pill">快速决策表</span>
+              </div>
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>你的目标</th>
+                      <th>优先方法</th>
+                      <th>为什么</th>
+                      <th>需要注意什么</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>低压亲和性比较</td>
+                      <td>Henry</td>
+                      <td>直接看初始斜率</td>
+                      <td>不要拿去解释全压区</td>
+                    </tr>
+                    <tr>
+                      <td>单层饱和近似</td>
+                      <td>Langmuir / Toth</td>
+                      <td>参数清晰，适合容量与亲和常数分析</td>
+                      <td>高压偏离时要检查双位点或非均匀性</td>
+                    </tr>
+                    <tr>
+                      <td>明显双位点</td>
+                      <td>Dual-site Langmuir</td>
+                      <td>可以分辨强位点和弱位点贡献</td>
+                      <td>参数更多，注意过拟合</td>
+                    </tr>
+                    <tr>
+                      <td>S 型或台阶型曲线</td>
+                      <td>PCHIP / Interpolation</td>
+                      <td>不强迫套入错误机理模型</td>
+                      <td>更适合表达，不适合单独做机理结论</td>
+                    </tr>
+                    <tr>
+                      <td>多温热力学分析</td>
+                      <td>Q<sub>st</sub> CC + Virial 交叉看</td>
+                      <td>一个直观，一个平滑</td>
+                      <td>温区重叠和插值质量很关键</td>
+                    </tr>
+                    <tr>
+                      <td>混合气竞争吸附预测</td>
+                      <td>IAST</td>
+                      <td>只有纯组分数据时最实用</td>
+                      <td>纯组分拟合必须先稳定</td>
+                    </tr>
+                    <tr>
+                      <td>比表面积</td>
+                      <td>BET</td>
+                      <td>行业通用、结果可比较</td>
+                      <td>重点是选点，不是整条曲线拟合</td>
+                    </tr>
+                    <tr>
+                      <td>微孔分布</td>
+                      <td>HK / SF / NLDFT</td>
+                      <td>针对微孔填充过程</td>
+                      <td>几何和 kernel 必须匹配</td>
+                    </tr>
+                    <tr>
+                      <td>介孔分布</td>
+                      <td>BJH / DH / NLDFT</td>
+                      <td>适合毛细凝聚主导的孔区</td>
+                      <td>要说明使用哪条支路</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="route-panel" id="route-adsorbates">
+          <div class="module-header frosted">
+            <div>
+              <p class="eyebrow">Adsorbate database</p>
+              <h2>吸附质信息检索</h2>
+            </div>
+            <button class="ghost-button jump-button" data-route-target="home">返回总览</button>
+          </div>
+
+          <div class="layout-two">
+            <aside class="side-panel frosted">
+              <label class="field">
+                <span>输入名称、分子式或中文</span>
+                <input id="adsorbate-search" type="text" placeholder="例如 CO2 / carbon dioxide / 二氧化碳" />
+              </label>
+              <button id="adsorbate-search-button" class="primary-button">查询</button>
+              <p class="helper-text">支持中英文名、别名与分子式联查。</p>
+            </aside>
+            <div class="content-panel frosted">
+              <div class="section-header-inline">
+                <h3>查询结果</h3>
+                <span id="adsorbate-count" class="pill">0 条记录</span>
+              </div>
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>分子</th>
+                      <th>中文</th>
+                      <th>英文</th>
+                      <th>分子尺寸 (Å)</th>
+                      <th>动力学直径 (Å)</th>
+                      <th>熔点 (°C)</th>
+                      <th>沸点 (°C)</th>
+                      <th>偶极矩 (D)</th>
+                      <th>四极矩</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adsorbate-results"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="route-panel" id="route-isotherm">
+          <div class="module-header frosted">
+            <div>
+              <p class="eyebrow">Model fitting</p>
+              <h2>等温线拟合</h2>
+            </div>
+            <button class="ghost-button jump-button" data-route-target="home">返回总览</button>
+          </div>
+
+          <div class="layout-two">
+            <form id="isotherm-form" class="side-panel frosted stacked-form">
+              <div class="field-grid">
+                <label class="field">
+                  <span>吸附质</span>
+                  <input name="adsorbate" value="carbon dioxide" />
+                </label>
+                <label class="field">
+                  <span>温度 (K)</span>
+                  <input name="temperature" type="number" step="0.1" value="298.15" />
+                </label>
+                <label class="field">
+                  <span>拟合模型</span>
+                  <select name="model">
+                    <option>Langmuir</option>
+                    <option>Freundlich</option>
+                    <option>BET</option>
+                    <option>Henry</option>
+                    <option>Quadratic</option>
+                    <option>Toth</option>
+                    <option>Temkin (Approx)</option>
+                    <option>Dual-site Langmuir</option>
+                    <option>PCHIP interpolation</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>压力单位</span>
+                  <select name="pressureUnit" class="pressure-unit-select">
+                    <option>bar</option>
+                    <option>kPa</option>
+                    <option>MPa</option>
+                    <option>atm</option>
+                    <option>torr</option>
+                    <option>p/p0</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>吸附量单位</span>
+                  <select name="loadingUnit" class="loading-unit-select">
+                    <option>mmol/g</option>
+                    <option>mol/kg</option>
+                    <option>mol/g</option>
+                    <option>cm3(STP)/g</option>
+                    <option>cc(STP)/g</option>
+                  </select>
+                </label>
+              </div>
+              <div class="field">
+                <span>粘贴两列表格</span>
+                <textarea name="rawData" class="dataset-textarea" placeholder="Pressure    Loading&#10;0.01    0.52&#10;0.05    1.18"></textarea>
+              </div>
+              <div class="toolbar-row">
+                <input id="isotherm-file" type="file" accept=".csv,.txt,.dat,.xlsx,.xls" />
+                <button type="button" class="ghost-button parse-file-button" data-target="isotherm">导入文件</button>
+                <button type="button" class="ghost-button sample-button" data-sample="isotherm">示例数据</button>
+              </div>
+              <div class="table-scroll compact">
+                <table class="data-table">
+                  <thead><tr><th>Pressure</th><th>Loading</th></tr></thead>
+                  <tbody id="isotherm-preview"></tbody>
+                </table>
+              </div>
+              <div class="toolbar-row">
+                <button type="button" class="ghost-button preview-button" data-target="isotherm">预览数据</button>
+                <button type="submit" class="primary-button">开始拟合</button>
+              </div>
+              <p id="isotherm-status" class="status-text"></p>
+            </form>
+
+            <div class="content-panel frosted">
+              <div class="section-header-inline">
+                <h3>拟合结果</h3>
+                <div class="button-group">
+                  <button class="ghost-button copy-table-button" data-copy-target="isotherm-params">复制参数</button>
+                  <button class="ghost-button export-csv-button" data-module="isotherm">导出 CSV</button>
+                  <button class="ghost-button export-json-button" data-module="isotherm">导出 JSON</button>
+                </div>
+              </div>
+              <div class="plot-style-panel" data-style-scope="isotherm">
+                <div class="style-grid">
+                  <label class="field"><span>字体</span><select data-style-key="fontFamily"><option value='"SF Pro Text", -apple-system, sans-serif'>SF Pro</option><option value='Georgia, serif'>Georgia</option><option value='"Times New Roman", serif'>Times</option><option value='"Helvetica Neue", Arial, sans-serif'>Helvetica</option></select></label>
+                  <label class="field"><span>字号</span><input data-style-key="fontSize" type="number" step="1" value="14" /></label>
+                  <label class="field"><span>点形状</span><select data-style-key="markerSymbol"><option value="circle">circle</option><option value="square">square</option><option value="diamond">diamond</option><option value="cross">cross</option><option value="triangle-up">triangle-up</option></select></label>
+                  <label class="field"><span>点大小</span><input data-style-key="markerSize" type="number" step="1" value="9" /></label>
+                  <label class="field"><span>点颜色</span><input data-style-key="markerColor" type="color" value="#1974d2" /></label>
+                  <label class="field"><span>线颜色</span><input data-style-key="lineColor" type="color" value="#0d425d" /></label>
+                  <label class="field"><span>线宽</span><input data-style-key="lineWidth" type="number" step="0.5" value="3" /></label>
+                  <label class="field"><span>X 轴</span><select data-style-key="xAxisType"><option value="linear">linear</option><option value="log">log</option></select></label>
+                  <label class="field"><span>Y 轴</span><select data-style-key="yAxisType"><option value="linear">linear</option><option value="log">log</option></select></label>
+                  <label class="field span-two"><span>X 轴标题覆盖</span><input data-style-key="xAxisTitle" placeholder="留空则使用默认标题" /></label>
+                  <label class="field span-two"><span>Y 轴标题覆盖</span><input data-style-key="yAxisTitle" placeholder="留空则使用默认标题" /></label>
+                </div>
+              </div>
+              <div id="isotherm-plot" class="plot-box"></div>
+              <div class="result-grid">
+                <article class="result-card"><span>R²</span><strong id="isotherm-r2">-</strong></article>
+                <article class="result-card"><span>RMSE</span><strong id="isotherm-rmse">-</strong></article>
+                <article class="result-card"><span>输出单位</span><strong id="isotherm-units">-</strong></article>
+                <article class="result-card"><span>拟合方式</span><strong id="isotherm-model-label">-</strong></article>
+              </div>
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead><tr><th>参数</th><th>数值</th></tr></thead>
+                  <tbody id="isotherm-params"></tbody>
+                </table>
+              </div>
+              <div id="isotherm-explanation" class="explanation-panel"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="route-panel" id="route-qst">
+          <div class="module-header frosted">
+            <div>
+              <p class="eyebrow">Isosteric heat</p>
+              <h2>Q<sub>st</sub> 计算</h2>
+            </div>
+            <button class="ghost-button jump-button" data-route-target="home">返回总览</button>
+          </div>
+
+          <div class="layout-two">
+            <div class="side-panel frosted stacked-form workflow-panel">
+              <div class="field-grid">
+                <label class="field"><span>吸附质</span><input id="qst-adsorbate" value="carbon dioxide" /></label>
+                <label class="field">
+                  <span>方法</span>
+                  <select id="qst-method">
+                    <option>Clausius-Clapeyron</option>
+                    <option>Virial</option>
+                  </select>
+                </label>
+              </div>
+              <div class="toolbar-row">
+                <button id="add-qst-dataset" type="button" class="ghost-button">新增温度组</button>
+                <button type="button" class="ghost-button sample-button" data-sample="qst">示例数据</button>
+              </div>
+              <div id="qst-datasets" class="stacked-blocks"></div>
+              <div class="toolbar-row">
+                <button id="run-qst" type="button" class="primary-button">计算 Q<sub>st</sub></button>
+              </div>
+              <p id="qst-status" class="status-text"></p>
+            </div>
+
+            <div class="content-panel frosted">
+              <div class="section-header-inline">
+                <h3>Q<sub>st</sub> 结果</h3>
+                <div class="button-group">
+                  <button class="ghost-button copy-table-button" data-copy-target="qst-table">复制表格</button>
+                  <button class="ghost-button export-csv-button" data-module="qst">导出 CSV</button>
+                  <button class="ghost-button export-json-button" data-module="qst">导出 JSON</button>
+                </div>
+              </div>
+              <div class="plot-style-panel" data-style-scope="qst">
+                <div class="style-grid compact-grid">
+                  <label class="field"><span>字体</span><select data-style-key="fontFamily"><option value='"SF Pro Text", -apple-system, sans-serif'>SF Pro</option><option value='Georgia, serif'>Georgia</option><option value='"Times New Roman", serif'>Times</option></select></label>
+                  <label class="field"><span>字号</span><input data-style-key="fontSize" type="number" step="1" value="14" /></label>
+                  <label class="field"><span>点形状</span><select data-style-key="markerSymbol"><option value="circle">circle</option><option value="square">square</option><option value="diamond">diamond</option></select></label>
+                  <label class="field"><span>点大小</span><input data-style-key="markerSize" type="number" step="1" value="7" /></label>
+                  <label class="field"><span>点颜色</span><input data-style-key="markerColor" type="color" value="#1974d2" /></label>
+                  <label class="field"><span>线颜色</span><input data-style-key="lineColor" type="color" value="#0d425d" /></label>
+                  <label class="field"><span>线宽</span><input data-style-key="lineWidth" type="number" step="0.5" value="3" /></label>
+                  <label class="field"><span>X 轴</span><select data-style-key="xAxisType"><option value="linear">linear</option><option value="log">log</option></select></label>
+                  <label class="field"><span>Y 轴</span><select data-style-key="yAxisType"><option value="linear">linear</option><option value="log">log</option></select></label>
+                  <label class="field span-two"><span>X 轴标题覆盖</span><input data-style-key="xAxisTitle" placeholder="留空则使用默认标题" /></label>
+                  <label class="field span-two"><span>Y 轴标题覆盖</span><input data-style-key="yAxisTitle" placeholder="留空则使用默认标题" /></label>
+                </div>
+              </div>
+              <div id="qst-plot" class="plot-box"></div>
+              <div id="qst-fit-plot" class="plot-box secondary-plot"></div>
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead><tr><th>Loading (mmol/g)</th><th>Qst (kJ/mol)</th><th>R² / 注</th></tr></thead>
+                  <tbody id="qst-table"></tbody>
+                </table>
+              </div>
+              <div id="qst-explanation" class="explanation-panel"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="route-panel" id="route-iast">
+          <div class="module-header frosted">
+            <div>
+              <p class="eyebrow">Ideal Adsorbed Solution Theory</p>
+              <h2>IAST 选择性计算</h2>
+            </div>
+            <button class="ghost-button jump-button" data-route-target="home">返回总览</button>
+          </div>
+
+          <div class="layout-two">
+            <div class="side-panel frosted stacked-form workflow-panel">
+              <div class="toolbar-row">
+                <button id="add-iast-component" type="button" class="ghost-button">新增组分</button>
+                <button type="button" class="ghost-button sample-button" data-sample="iast">示例数据</button>
+              </div>
+              <div id="iast-components" class="stacked-blocks"></div>
+              <div class="field-grid">
+                <label class="field"><span>气相摩尔分数</span><input id="iast-fractions" value="0.15, 0.85" /></label>
+                <label class="field"><span>总压列表</span><input id="iast-total-pressures" value="0.1, 0.5, 1, 2, 5, 10" /></label>
+                <label class="field"><span>总压单位</span><select id="iast-total-pressure-unit"><option>bar</option><option>kPa</option><option>MPa</option><option>atm</option></select></label>
+              </div>
+              <div class="toolbar-row">
+                <button id="run-iast" type="button" class="primary-button">运行 IAST</button>
+              </div>
+              <p id="iast-status" class="status-text"></p>
+            </div>
+
+            <div class="content-panel frosted">
+              <div class="section-header-inline">
+                <h3>IAST 输出</h3>
+                <div class="button-group">
+                  <button class="ghost-button copy-table-button" data-copy-target="iast-table">复制结果</button>
+                  <button class="ghost-button export-csv-button" data-module="iast">导出 CSV</button>
+                  <button class="ghost-button export-json-button" data-module="iast">导出 JSON</button>
+                </div>
+              </div>
+              <div class="plot-style-panel" data-style-scope="iast">
+                <div class="style-grid compact-grid">
+                  <label class="field"><span>字体</span><select data-style-key="fontFamily"><option value='"SF Pro Text", -apple-system, sans-serif'>SF Pro</option><option value='Georgia, serif'>Georgia</option><option value='"Times New Roman", serif'>Times</option></select></label>
+                  <label class="field"><span>字号</span><input data-style-key="fontSize" type="number" step="1" value="14" /></label>
+                  <label class="field"><span>点形状</span><select data-style-key="markerSymbol"><option value="circle">circle</option><option value="square">square</option><option value="diamond">diamond</option></select></label>
+                  <label class="field"><span>点大小</span><input data-style-key="markerSize" type="number" step="1" value="7" /></label>
+                  <label class="field"><span>点颜色</span><input data-style-key="markerColor" type="color" value="#1974d2" /></label>
+                  <label class="field"><span>线颜色</span><input data-style-key="lineColor" type="color" value="#0d425d" /></label>
+                  <label class="field"><span>线宽</span><input data-style-key="lineWidth" type="number" step="0.5" value="3" /></label>
+                  <label class="field"><span>X 轴</span><select data-style-key="xAxisType"><option value="linear">linear</option><option value="log">log</option></select></label>
+                  <label class="field"><span>Y 轴</span><select data-style-key="yAxisType"><option value="linear">linear</option><option value="log">log</option></select></label>
+                  <label class="field span-two"><span>X 轴标题覆盖</span><input data-style-key="xAxisTitle" placeholder="留空则使用默认标题" /></label>
+                  <label class="field span-two"><span>Y 轴标题覆盖</span><input data-style-key="yAxisTitle" placeholder="留空则使用默认标题" /></label>
+                </div>
+              </div>
+              <div id="iast-selectivity-plot" class="plot-box"></div>
+              <div id="iast-uptake-plot" class="plot-box secondary-plot"></div>
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead id="iast-table-head"></thead>
+                  <tbody id="iast-table"></tbody>
+                </table>
+              </div>
+              <div id="iast-explanation" class="explanation-panel"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="route-panel" id="route-betpsd">
+          <div class="module-header frosted">
+            <div>
+              <p class="eyebrow">BET + PSD workflow</p>
+              <h2>BET / t-plot / 孔径分布</h2>
+            </div>
+            <button class="ghost-button jump-button" data-route-target="home">返回总览</button>
+          </div>
+
+          <div class="layout-two">
+            <form id="bet-form" class="side-panel frosted stacked-form">
+              <div class="field-grid">
+                <label class="field">
+                  <span>吸附质</span>
+                  <select name="adsorbate">
+                    <option value="nitrogen">N2 @ 77 K</option>
+                    <option value="argon">Ar @ 87 K</option>
+                    <option value="carbon dioxide">CO2 @ 273 K</option>
+                  </select>
+                </label>
+                <label class="field"><span>温度 (K)</span><input name="temperature" value="77" /></label>
+                <label class="field">
+                  <span>压力单位</span>
+                  <select name="pressureUnit" class="pressure-unit-select">
+                    <option>p/p0</option>
+                    <option>bar</option>
+                    <option>kPa</option>
+                    <option>atm</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>吸附量单位</span>
+                  <select name="loadingUnit" class="loading-unit-select">
+                    <option>mmol/g</option>
+                    <option>cm3(STP)/g</option>
+                    <option>cc(STP)/g</option>
+                    <option>mol/kg</option>
+                  </select>
+                </label>
+                <label class="field"><span>BET / 微孔支路</span><select name="branch"><option value="ads">adsorption</option><option value="des">desorption</option></select></label>
+                <label class="field"><span>厚度模型</span><select name="thicknessModel"><option>Harkins/Jura</option><option>Halsey</option></select></label>
+                <label class="field"><span>PSD 模式</span><select name="psdMode" id="psd-mode-select"><option value="classical">经典模型</option><option value="dft">NLDFT</option></select></label>
+                <label class="field"><span>孔径家族</span><select name="poreFamily" id="pore-family-select"><option value="micro">微孔</option><option value="meso">介孔 / 大孔</option></select></label>
+                <label class="field"><span>经典模型</span><select name="classicalModel" id="classical-model-select"><option value="HK">HK</option><option value="SF">SF</option><option value="RY">RY</option><option value="RY-CY">RY-CY</option><option value="HK-CY">HK-CY</option></select></label>
+                <label class="field"><span>微孔几何</span><select name="microGeometry" id="micro-geometry-select"><option value="slit">slit</option><option value="cylinder">cylinder</option><option value="sphere">sphere</option></select></label>
+                <label class="field"><span>介孔几何</span><select name="mesoGeometry" id="meso-geometry-select"><option value="cylinder">cylinder</option><option value="slit">slit</option><option value="sphere">sphere</option></select></label>
+                <label class="field"><span>弯月面几何</span><select name="meniscusGeometry" id="meniscus-geometry-select"><option value="">auto</option><option value="cylinder">cylinder</option><option value="hemicylindrical">hemicylindrical</option><option value="sphere">sphere</option></select></label>
+                <label class="field"><span>介孔支路</span><select name="mesoBranch"><option value="des">desorption</option><option value="ads">adsorption</option></select></label>
+                <label class="field"><span>NLDFT 内核</span><select name="dftKernel"><option value="DFT-N2-77K-carbon-slit">DFT-N2-77K-carbon-slit</option></select></label>
+                <label class="field span-two"><span>自定义 kernel 路径</span><input name="customKernelPath" placeholder="可选，例如 /path/to/kernel.csv" /></label>
+              </div>
+              <p class="helper-text">经典模型与 NLDFT 是二选一。当前内置 NLDFT 仅直接支持 77 K N<sub>2</sub>，Ar / CO<sub>2</sub> 需用经典模型或外部 kernel。</p>
+              <div class="field">
+                <span>粘贴两列表格</span>
+                <textarea name="rawData" class="dataset-textarea" placeholder="p/p0    Loading&#10;0.01    50.4&#10;0.03    73.1"></textarea>
+              </div>
+              <div class="toolbar-row">
+                <input id="bet-file" type="file" accept=".csv,.txt,.dat,.xlsx,.xls" />
+                <button type="button" class="ghost-button parse-file-button" data-target="bet">导入文件</button>
+                <button type="button" class="ghost-button sample-button" data-sample="bet">示例数据</button>
+              </div>
+              <div class="table-scroll compact">
+                <table class="data-table">
+                  <thead><tr><th>Pressure</th><th>Loading</th></tr></thead>
+                  <tbody id="bet-preview"></tbody>
+                </table>
+              </div>
+              <div class="toolbar-row">
+                <button type="button" class="ghost-button preview-button" data-target="bet">预览数据</button>
+                <button type="submit" class="primary-button">运行 BET / PSD</button>
+              </div>
+              <p id="bet-status" class="status-text"></p>
+            </form>
+
+            <div class="content-panel frosted">
+              <div class="section-header-inline">
+                <h3>表面积与孔分布结果</h3>
+                <div class="button-group">
+                  <button class="ghost-button copy-table-button" data-copy-target="bet-summary-table">复制摘要</button>
+                  <button class="ghost-button export-csv-button" data-module="bet">导出 CSV</button>
+                  <button class="ghost-button export-json-button" data-module="bet">导出 JSON</button>
+                </div>
+              </div>
+              <div class="plot-style-panel" data-style-scope="bet">
+                <div class="style-grid compact-grid">
+                  <label class="field"><span>字体</span><select data-style-key="fontFamily"><option value='"SF Pro Text", -apple-system, sans-serif'>SF Pro</option><option value='Georgia, serif'>Georgia</option><option value='"Times New Roman", serif'>Times</option></select></label>
+                  <label class="field"><span>字号</span><input data-style-key="fontSize" type="number" step="1" value="14" /></label>
+                  <label class="field"><span>点形状</span><select data-style-key="markerSymbol"><option value="circle">circle</option><option value="square">square</option><option value="diamond">diamond</option></select></label>
+                  <label class="field"><span>点大小</span><input data-style-key="markerSize" type="number" step="1" value="8" /></label>
+                  <label class="field"><span>点颜色</span><input data-style-key="markerColor" type="color" value="#1974d2" /></label>
+                  <label class="field"><span>线颜色</span><input data-style-key="lineColor" type="color" value="#0d425d" /></label>
+                  <label class="field"><span>线宽</span><input data-style-key="lineWidth" type="number" step="0.5" value="3" /></label>
+                  <label class="field"><span>X 轴</span><select data-style-key="xAxisType"><option value="linear">linear</option><option value="log">log</option></select></label>
+                  <label class="field"><span>Y 轴</span><select data-style-key="yAxisType"><option value="linear">linear</option><option value="log">log</option></select></label>
+                  <label class="field span-two"><span>X 轴标题覆盖</span><input data-style-key="xAxisTitle" placeholder="留空则使用默认标题" /></label>
+                  <label class="field span-two"><span>Y 轴标题覆盖</span><input data-style-key="yAxisTitle" placeholder="留空则使用默认标题" /></label>
+                </div>
+              </div>
+              <div id="bet-plot" class="plot-box"></div>
+              <div id="psd-plot" class="plot-box secondary-plot"></div>
+              <div class="result-grid">
+                <article class="result-card"><span>BET Area</span><strong id="bet-area">-</strong></article>
+                <article class="result-card"><span>C Constant</span><strong id="bet-c">-</strong></article>
+                <article class="result-card"><span>BET R²</span><strong id="bet-r2">-</strong></article>
+                <article class="result-card"><span>平均孔径</span><strong id="bet-avg-pore">-</strong></article>
+              </div>
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead><tr><th>项目</th><th>结果</th></tr></thead>
+                  <tbody id="bet-summary-table"></tbody>
+                </table>
+              </div>
+              <ul id="bet-warnings" class="warning-list"></ul>
+              <div id="bet-explanation" class="explanation-panel"></div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Designed by Xiaoyu Zhang at Tongji, shaped together with Codex.</p>
+        <p>If needed, feel free to contact owenxyzhang@gmail.com.</p>
+      </footer>
+    </div>
+
+    <div id="import-modal" class="import-modal" hidden>
+      <div class="import-dialog frosted">
+        <div class="import-dialog-head">
+          <div>
+            <p class="eyebrow">Import confirmation</p>
+            <h3>确认导入的数据列</h3>
+            <p class="helper-text">程序会先猜测数据区、压力列、吸附量列和单位；在这里确认之后才会真正写入工作区。</p>
+          </div>
+          <button id="import-close" type="button" class="ghost-button small">关闭</button>
+        </div>
+        <div class="import-grid">
+          <div class="stacked-form">
+            <div class="field-grid">
+              <label class="field"><span>Sheet</span><select id="import-sheet"></select></label>
+              <label class="field"><span>压力列</span><select id="import-pressure-column"></select></label>
+              <label class="field"><span>吸附量列</span><select id="import-loading-column"></select></label>
+              <label class="field"><span>压力单位</span><select id="import-pressure-unit"><option>bar</option><option>kPa</option><option>MPa</option><option>atm</option><option>torr</option><option>Pa</option><option>p/p0</option></select></label>
+              <label class="field"><span>吸附量单位</span><select id="import-loading-unit"><option>mmol/g</option><option>mol/kg</option><option>mol/g</option><option>cm3(STP)/g</option><option>cc(STP)/g</option></select></label>
+            </div>
+            <p id="import-branch-guess" class="helper-text"></p>
+            <ul id="import-warning-list" class="warning-list"></ul>
+          </div>
+          <div class="content-panel import-preview-panel">
+            <div class="section-header-inline">
+              <h4>导入预览</h4>
+              <span class="pill">只显示前 12 行</span>
+            </div>
+            <div class="table-scroll">
+              <table class="data-table">
+                <thead><tr><th>Pressure</th><th>Loading</th></tr></thead>
+                <tbody id="import-preview-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="toolbar-row import-dialog-actions">
+          <button id="import-cancel" type="button" class="ghost-button">取消</button>
+          <button id="import-confirm" type="button" class="primary-button">确认导入</button>
+        </div>
+      </div>
+    </div>
+
+    <template id="qst-dataset-template">
+      <section class="dataset-card workflow-card">
+        <div class="section-header-inline">
+          <h4>温区数据</h4>
+          <button type="button" class="ghost-button small remove-block">移除</button>
+        </div>
+        <div class="field-grid">
+          <label class="field"><span>温度 (K)</span><input class="dataset-temperature" type="number" step="0.1" value="298.15" /></label>
+          <label class="field"><span>压力单位</span><select class="pressure-unit-select"><option>bar</option><option>kPa</option><option>MPa</option><option>atm</option><option>p/p0</option></select></label>
+          <label class="field"><span>吸附量单位</span><select class="loading-unit-select"><option>mmol/g</option><option>mol/kg</option><option>cm3(STP)/g</option><option>cc(STP)/g</option></select></label>
+        </div>
+        <textarea class="dataset-textarea" placeholder="Pressure    Loading"></textarea>
+        <div class="toolbar-row">
+          <input class="dataset-file" type="file" accept=".csv,.txt,.dat,.xlsx,.xls" />
+          <button type="button" class="ghost-button block-import">导入文件</button>
+          <button type="button" class="ghost-button block-preview">预览</button>
+        </div>
+        <div class="table-scroll compact">
+          <table class="data-table">
+            <thead><tr><th>Pressure</th><th>Loading</th></tr></thead>
+            <tbody class="dataset-preview"></tbody>
+          </table>
+        </div>
+      </section>
+    </template>
+
+    <template id="iast-component-template">
+      <section class="dataset-card workflow-card">
+        <div class="section-header-inline">
+          <h4>纯组分</h4>
+          <button type="button" class="ghost-button small remove-block">移除</button>
+        </div>
+        <div class="field-grid">
+          <label class="field"><span>标签</span><input class="component-label" value="CO2" /></label>
+          <label class="field"><span>吸附质</span><input class="component-adsorbate" value="carbon dioxide" /></label>
+          <label class="field"><span>温度 (K)</span><input class="dataset-temperature" type="number" step="0.1" value="298.15" /></label>
+          <label class="field"><span>模型</span><select class="component-model"><option>Langmuir</option><option>Dual-site Langmuir</option><option>Toth</option><option>Quadratic</option><option>BET</option><option>Temkin (Approx)</option><option>Henry</option><option>Interpolation (Linear)</option></select></label>
+          <label class="field"><span>压力单位</span><select class="pressure-unit-select"><option>bar</option><option>kPa</option><option>MPa</option><option>atm</option></select></label>
+          <label class="field"><span>吸附量单位</span><select class="loading-unit-select"><option>mmol/g</option><option>mol/kg</option><option>cm3(STP)/g</option><option>cc(STP)/g</option></select></label>
+        </div>
+        <textarea class="dataset-textarea" placeholder="Pressure    Loading"></textarea>
+        <div class="toolbar-row">
+          <input class="dataset-file" type="file" accept=".csv,.txt,.dat,.xlsx,.xls" />
+          <button type="button" class="ghost-button block-import">导入文件</button>
+          <button type="button" class="ghost-button block-preview">预览</button>
+        </div>
+        <div class="table-scroll compact">
+          <table class="data-table">
+            <thead><tr><th>Pressure</th><th>Loading</th></tr></thead>
+            <tbody class="dataset-preview"></tbody>
+          </table>
+        </div>
+      </section>
+    </template>
+  </body>
+</html>

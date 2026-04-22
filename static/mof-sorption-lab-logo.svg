@@ -1,0 +1,20 @@
+<svg width="920" height="220" viewBox="0 0 920 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="logoBg" x1="22" y1="18" x2="198" y2="200" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0A84FF"/>
+      <stop offset="1" stop-color="#64D2FF"/>
+    </linearGradient>
+  </defs>
+  <rect x="16" y="16" width="188" height="188" rx="54" fill="url(#logoBg)"/>
+  <g opacity="0.95">
+    <path d="M64 86L84 74L104 86V110L84 122L64 110V86Z" stroke="white" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M114 86L134 74L154 86V110L134 122L114 110V86Z" stroke="white" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M89 127L109 115L129 127V151L109 163L89 151V127Z" stroke="white" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M60 164C75 145.333 91.6667 136 110 136C128.333 136 145.333 146 161 166" stroke="white" stroke-width="10" stroke-linecap="round"/>
+    <circle cx="161" cy="166" r="6.5" fill="white"/>
+  </g>
+  <g fill="#10233A">
+    <text x="244" y="92" font-size="58" font-family="SF Pro Display, SF Pro Text, Helvetica Neue, Arial, sans-serif" font-weight="700" letter-spacing="-2.4">MOF Sorption Lab</text>
+    <text x="246" y="138" font-size="24" font-family="SF Pro Text, Helvetica Neue, Arial, sans-serif" font-weight="500" fill="#5E6D81">Adsorption analysis for porous materials</text>
+  </g>
+</svg>
